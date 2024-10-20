@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             query.setFilterById(id)
             val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
 
-
             val cursor = downloadManager.query(query)
 
             if (cursor.moveToFirst()){
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                 val status = cursor.getInt(test)
 
                 when (status) {
-                    DownloadManager.STATUS_SUCCESSFUL ->{
+                    DownloadManager.STATUS_SUCCESSFUL -> {
                         Toast.makeText(context, "testing succes " + id, Toast.LENGTH_LONG).show()
 
                     }
