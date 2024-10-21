@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        var selectedUrl = ""
+        var selectedUrl: String? = null
 
         binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton: RadioButton = findViewById(checkedId)
@@ -41,15 +41,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.customButton.setOnClickListener {
-            download(selectedUrl)
+            if (selectedUrl == null) {
+                Toast.makeText(this, getString(R.string.select_url), Toast.LENGTH_SHORT).show()
+            } else {
+                download(selectedUrl ?: "")
+                binding.customButton.startAnimation()
+            }
         }
     }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: 0
-
-
             //DownloadManager.Query() is used to filter DownloadManager queries
             val query = DownloadManager.Query()
 
