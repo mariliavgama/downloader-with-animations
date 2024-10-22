@@ -1,18 +1,22 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.udacity.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +52,8 @@ class MainActivity : AppCompatActivity() {
                 binding.customButton.startAnimation()
             }
         }
+
+        createChannel()
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -68,13 +74,21 @@ class MainActivity : AppCompatActivity() {
 
                 when (status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
-                        Toast.makeText(context, "testing succes " + id, Toast.LENGTH_LONG).show()
+                        context?.let {
+                            val notificationManager = ContextCompat.getSystemService(
+                                context,
+                                NotificationManager::class.java
+                            ) as NotificationManager
 
+                            notificationManager.sendNotification(
+                                context.getText(R.string.notification_description).toString(),
+                                context
+                            )
+                        }
                     }
                     DownloadManager.STATUS_FAILED -> {
                         Toast.makeText(context, "testing fail " + id, Toast.LENGTH_LONG).show()
                     }
-
                 }
             }
         }
@@ -94,7 +108,26 @@ class MainActivity : AppCompatActivity() {
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
     }
 
-    companion object {
-        private const val CHANNEL_ID = "channelId"
+    private fun createChannel() {
+        // Create a channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                getString(R.string.download_notification_channel_id),
+                getString(R.string.download_notification_channel_name),
+                // Change importance
+                NotificationManager.IMPORTANCE_HIGH
+            ) // Disable badges for this channel
+            .apply {
+                setShowBadge(false)
+            }
+
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = getString(R.string.download_notification_channel_description)
+
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
     }
 }

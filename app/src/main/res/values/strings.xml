@@ -15,5 +15,9 @@
     <string name="radio_load_app">LoadApp - Current repository by Udacity (this will fail)</string>
     <string name="radio_retrofit">Retrofit - Type-safe HTTP client for Android and Java by Square, Inc</string>
     <string name="download_image">download image</string>
-    <string name="select_url">Please select a URL to download</string>
+    <string name="select_url">Please select the file to download</string>
+
+    <string name="download_notification_channel_id" translatable="false">download_channel</string>
+    <string name="download_notification_channel_name" translatable="true">Download</string>
+    <string name="download_notification_channel_description">Download reminder</string>
 </resources>
