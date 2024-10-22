@@ -3,7 +3,6 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -21,7 +20,7 @@ class LoadingButton @JvmOverloads constructor(
     private var loadingButtonColor: Int = 0
     private var buttonTextDownload: String = ""
     private var buttonTextLoading: String = ""
-    private var angle = 0f
+    private var circleAngle = 0f
 
     private val buttonPaint = Paint().apply {
         color = downloadButtonColor
@@ -91,62 +90,50 @@ class LoadingButton @JvmOverloads constructor(
             canvas.drawText(buttonTextLoading, xPos, yPos, textPaint)
 
             // Draw the circular indicator
-            val circleSize = widthSize / 16
+            val circleSize = widthSize / 18
             val radius = circleSize / 2f - circlePaint.strokeWidth / 2
             canvas.drawArc(
-                xPos, //circleSize / 2f - radius,
-                yPos,  //circleSize / 2f - radius,
-                xPos + 2 * radius, //circleSize / 2f + radius,
-                yPos + 2 * radius,// circleSize / 2f + radius,
+                (widthSize / 4) * 3 - radius,
+                (heightSize / 2) - radius,
+                (widthSize / 4) * 3 + radius,
+                (heightSize / 2) + radius,
                 0f,
-                angle,
+                circleAngle,
                 true,
                 circlePaint
             )
         }
     }
 
-    fun setButtonWidth(width: Float) {
+    private fun setButtonWidth(width: Float) {
         buttonWidth = width
         invalidate() // Request to redraw the view
     }
 
-    fun setButtonHeight(height: Float) {
+    private fun setButtonHeight(height: Float) {
         buttonHeight = height
         invalidate() // Request to redraw the view
     }
 
-    fun setButtonColor(color: Int) {
-        loadingButtonColor = color
-        invalidate() // Request to redraw the view
-    }
-
-    fun setButtonText(text: String) {
-        buttonTextDownload = text
+    private fun setCircleAngle(angle: Float) {
+        circleAngle = angle
         invalidate() // Request to redraw the view
     }
 
     fun startAnimation() {
+        buttonState = ButtonState.Loading
         setButtonWidth(0f)
         setButtonHeight(heightSize)
-        buttonState = ButtonState.Loading
 
         val widthAnimator = ValueAnimator.ofFloat(0f, widthSize)
         widthAnimator.addUpdateListener { animation ->
             setButtonWidth(animation.animatedValue as Float)
         }
 
-        /*val colorAnimator = ValueAnimator.ofArgb(Color.BLUE, Color.GREEN)
-        colorAnimator.addUpdateListener { animation ->
-            buttonColor = animation.animatedValue as Int
-            invalidate()
-        }*/
-
         val circleAnimator = ValueAnimator.ofFloat(0f, 360f)
         circleAnimator.repeatCount = ValueAnimator.INFINITE
         circleAnimator.addUpdateListener { animation ->
-            angle = animation.animatedValue as Float
-            invalidate() // Redraw the view
+            setCircleAngle(animation.animatedValue as Float)
         }
 
         widthAnimator.duration = 2000
