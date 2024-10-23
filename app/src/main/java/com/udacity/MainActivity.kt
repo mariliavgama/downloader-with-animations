@@ -18,6 +18,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.udacity.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +47,9 @@ class MainActivity : AppCompatActivity() {
         binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton: RadioButton = findViewById(checkedId)
             selectedUrl = selectedRadioButton.tag.toString() // Get the URL from the selected radio button
+
+            // If the user selects a new radio, complete the animation to display the Download Button
+            binding.customButton.completeAnimation()
         }
 
         binding.customButton.setOnClickListener {
@@ -72,24 +80,40 @@ class MainActivity : AppCompatActivity() {
 
                 val status = cursor.getInt(test)
 
-                when (status) {
-                    DownloadManager.STATUS_SUCCESSFUL -> {
-                        context?.let {
-                            val notificationManager = ContextCompat.getSystemService(
-                                context,
-                                NotificationManager::class.java
-                            ) as NotificationManager
+                context?.let {
+                    val notificationManager = ContextCompat.getSystemService(
+                        context,
+                        NotificationManager::class.java
+                    ) as NotificationManager
 
+                    when (status) {
+                        DownloadManager.STATUS_SUCCESSFUL -> {
                             notificationManager.sendNotification(
-                                context.getText(R.string.notification_description).toString(),
+                                R.drawable.notification_success,
+                                context.getText(R.string.notification_description_success).toString(),
+                                "success",
+                                context
+                            )
+                        }
+
+                        DownloadManager.STATUS_FAILED -> {
+                            notificationManager.sendNotification(
+                                R.drawable.notification_fail,
+                                context.getText(R.string.notification_description_failure).toString(),
+                                "fail",
                                 context
                             )
                         }
                     }
-                    DownloadManager.STATUS_FAILED -> {
-                        Toast.makeText(context, "testing fail " + id, Toast.LENGTH_LONG).show()
-                    }
                 }
+            }
+
+            // After the download completes, wait 1 second and complete the animation
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
+            coroutineScope.launch {
+                delay(1000)
+                binding.customButton.completeAnimation()
+                cancel()
             }
         }
     }
@@ -115,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.download_notification_channel_id),
                 getString(R.string.download_notification_channel_name),
                 // Change importance
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_DEFAULT
             ) // Disable badges for this channel
             .apply {
                 setShowBadge(false)

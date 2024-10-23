@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.withStyledAttributes
-import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -37,11 +36,7 @@ class LoadingButton @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
 
-    private val valueAnimator = ValueAnimator()
-
-    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
-
-    }
+    private var buttonState: ButtonState = ButtonState.Completed
 
     init {
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
@@ -141,6 +136,10 @@ class LoadingButton @JvmOverloads constructor(
 
         widthAnimator.start()
         circleAnimator.start()
+    }
+
+    fun completeAnimation() {
+        buttonState = ButtonState.Completed
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

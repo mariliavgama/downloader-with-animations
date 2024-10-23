@@ -13,5 +13,12 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        binding.okButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        val test = intent.getStringExtra("EXTRA_STATUS");
+        binding.status.text = test
     }
 }
