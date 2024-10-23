@@ -2,6 +2,8 @@ package com.udacity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.udacity.Constants.EXTRA_REPOSITORY
+import com.udacity.Constants.EXTRA_STATUS
 import com.udacity.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
@@ -18,7 +20,10 @@ class DetailActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        val test = intent.getStringExtra("EXTRA_STATUS");
-        binding.status.text = test
+        val repository = intent.getStringExtra(EXTRA_REPOSITORY)
+        val status = intent.getStringExtra(EXTRA_STATUS)
+
+        binding.repository.text = repository
+        binding.status.text = status
     }
 }

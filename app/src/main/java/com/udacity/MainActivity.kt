@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
+    private var selectedUrl: String? = null
+    private var selectedRepository: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +44,10 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        var selectedUrl: String? = null
-
         binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             val selectedRadioButton: RadioButton = findViewById(checkedId)
             selectedUrl = selectedRadioButton.tag.toString() // Get the URL from the selected radio button
-
+            selectedRepository = selectedRadioButton.text.toString()
             // If the user selects a new radio, complete the animation to display the Download Button
             binding.customButton.completeAnimation()
         }
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             if (selectedUrl == null) {
                 Toast.makeText(this, getString(R.string.select_url), Toast.LENGTH_SHORT).show()
             } else {
-                download(selectedUrl ?: "")
+                download(selectedUrl ?: "", selectedRepository)
                 binding.customButton.startAnimation()
             }
         }
@@ -91,7 +91,8 @@ class MainActivity : AppCompatActivity() {
                             notificationManager.sendNotification(
                                 R.drawable.notification_success,
                                 context.getText(R.string.notification_description_success).toString(),
-                                "success",
+                                selectedRepository,
+                                getString(R.string.status_success),
                                 context
                             )
                         }
@@ -100,7 +101,8 @@ class MainActivity : AppCompatActivity() {
                             notificationManager.sendNotification(
                                 R.drawable.notification_fail,
                                 context.getText(R.string.notification_description_failure).toString(),
-                                "fail",
+                                selectedRepository,
+                                getString(R.string.status_fail),
                                 context
                             )
                         }
@@ -118,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun download(url: String) {
+    private fun download(url: String, selectedRepository: String) {
         val request =
             DownloadManager.Request(Uri.parse(url))
                 .setTitle(getString(R.string.app_name))
