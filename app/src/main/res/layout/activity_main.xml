@@ -76,14 +76,14 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_margin="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:buttonColor1="@color/colorPrimary"
         app:buttonColor2="@color/colorPrimaryDark"
         app:buttonText1="@string/button_name"
         app:buttonText2="@string/button_loading"
         app:buttonTextColor="@color/white"
-        app:circleColor="@color/colorAccent" />
+        app:circleColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
