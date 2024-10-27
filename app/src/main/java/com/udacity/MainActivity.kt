@@ -89,20 +89,20 @@ class MainActivity : AppCompatActivity() {
                     when (status) {
                         DownloadManager.STATUS_SUCCESSFUL -> {
                             notificationManager.sendNotification(
-                                R.drawable.notification_success,
+                                R.drawable.ic_success,
                                 context.getText(R.string.notification_description_success).toString(),
                                 selectedRepository,
-                                getString(R.string.status_success),
+                                R.string.status_success,
                                 context
                             )
                         }
 
                         DownloadManager.STATUS_FAILED -> {
                             notificationManager.sendNotification(
-                                R.drawable.notification_fail,
+                                R.drawable.ic_fail,
                                 context.getText(R.string.notification_description_failure).toString(),
                                 selectedRepository,
-                                getString(R.string.status_fail),
+                                R.string.status_fail,
                                 context
                             )
                         }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layoutDescription="@xml/step1"
     tools:context=".DetailActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -17,41 +17,55 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/white"/>
 
-    <ScrollView
+    <TextView
+        android:id="@+id/repository"
+        style="@style/DetailText"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/default_margin"
-        app:layout_constraintBottom_toTopOf="@id/ok_button"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="@string/radio_glide"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <Button
+        android:id="@+id/animate_button"
+        style="@style/StatusButton"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height"
+        android:layout_margin="@dimen/default_margin"
+        android:text="@string/show_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repository"/>
 
-            <TextView
-                android:id="@+id/repository"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="@string/radio_glide"/>
+    <TextView
+        android:id="@+id/status_text"
+        style="@style/DetailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/default_margin"
+        android:paddingStart="@dimen/default_margin"
+        android:paddingEnd="@dimen/default_margin"
+        app:layout_constraintTop_toBottomOf="@id/animate_button"
+        tools:text="Success"/>
 
-            <TextView
-                android:id="@+id/status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Success"/>
-        </LinearLayout>
-    </ScrollView>
+    <ImageView
+        android:id="@+id/status_image"
+        android:layout_width="@dimen/status_image_size"
+        android:layout_height="@dimen/status_image_size"
+        android:contentDescription="@string/status_image"
+        tools:srcCompat="@drawable/ic_success"/>
 
     <Button
         android:id="@+id/ok_button"
         style="@style/OKButton"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_margin="20dp"
+        android:layout_height="@dimen/button_height"
+        android:layout_margin="@dimen/default_margin"
         android:text="@string/ok_button_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

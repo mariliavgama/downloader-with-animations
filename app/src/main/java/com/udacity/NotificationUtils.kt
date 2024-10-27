@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import com.udacity.Constants.EXTRA_REPOSITORY
 import com.udacity.Constants.EXTRA_STATUS
@@ -20,7 +21,7 @@ private const val NOTIFICATION_ID = 0
  * Builds and delivers the notification.
  */
 fun NotificationManager.sendNotification(@DrawableRes notificationImageResId: Int,
-                                         messageBody: String, repository: String, status: String,
+                                         messageBody: String, repository: String, @StringRes statusResId: Int,
                                          applicationContext: Context) {
     // Create the content intent for the notification, which launches this activity
 
@@ -47,7 +48,7 @@ fun NotificationManager.sendNotification(@DrawableRes notificationImageResId: In
     // See details action
     val detailIntent = Intent(applicationContext, DetailActivity::class.java)
 
-    detailIntent.putExtra(EXTRA_STATUS, status)
+    detailIntent.putExtra(EXTRA_STATUS, statusResId)
     detailIntent.putExtra(EXTRA_REPOSITORY, repository)
 
     val detailPendingIntent: PendingIntent = TaskStackBuilder.create(applicationContext).run {
