@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,6 +14,8 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.udacity.databinding.ActivityMainBinding
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private var selectedUrl: String? = null
     private var selectedRepository: String = ""
+    private var notificationSuccessful = false
+    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +70,30 @@ class MainActivity : AppCompatActivity() {
         createChannel()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        requestPermissionLauncher = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission granted, proceed with using POST_NOTIFICATIONS
+                if (notificationSuccessful) {
+                    sendNotificationSuccess()
+                } else {
+                    sendNotificationFail()
+                }
+            } else {
+                // Permission denied, show a message
+                Toast.makeText(this, getString(R.string.permission_needed_message), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: 0
@@ -84,23 +113,19 @@ class MainActivity : AppCompatActivity() {
                 context?.let {
                     when (status) {
                         DownloadManager.STATUS_SUCCESSFUL -> {
-                            notificationManager.sendNotification(
-                                R.drawable.ic_success,
-                                context.getText(R.string.notification_description_success).toString(),
-                                selectedRepository,
-                                R.string.status_success,
-                                context
-                            )
-                        }
-
-                        DownloadManager.STATUS_FAILED -> {
-                            notificationManager.sendNotification(
-                                R.drawable.ic_fail,
-                                context.getText(R.string.notification_description_failure).toString(),
-                                selectedRepository,
-                                R.string.status_fail,
-                                context
-                            )
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                notificationSuccessful = true
+                                requestPermissionLauncher?.launch(POST_NOTIFICATIONS)
+                            } else {
+                                sendNotificationSuccess()
+                            }
+                        } else -> {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                notificationSuccessful = false
+                                requestPermissionLauncher?.launch(POST_NOTIFICATIONS)
+                            } else {
+                                sendNotificationFail()
+                            }
                         }
                     }
                 }
@@ -114,6 +139,26 @@ class MainActivity : AppCompatActivity() {
                 cancel()
             }
         }
+    }
+
+    private fun sendNotificationSuccess() {
+        notificationManager.sendNotification(
+            R.drawable.ic_success,
+            getText(R.string.notification_description_success).toString(),
+            selectedRepository,
+            R.string.status_success,
+            this
+        )
+    }
+
+    private fun sendNotificationFail() {
+        notificationManager.sendNotification(
+            R.drawable.ic_fail,
+            getText(R.string.notification_description_failure).toString(),
+            selectedRepository,
+            R.string.status_fail,
+            this
+        )
     }
 
     private fun download(url: String, selectedRepository: String) {
